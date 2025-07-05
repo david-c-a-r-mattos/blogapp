@@ -32,6 +32,7 @@ app.use(session(
     resave: true,
     saveUnitialized: true
 }));
+app.use(flash());
 app.use((req, res, next) =>
 {
     res.locals.success_msg = req.flash("success_msg")
@@ -60,6 +61,5 @@ app.get("/admin/categories/add", (req, res) =>
 {
     res.render("admin/addcategories")
 })
-//Outros
 const PORT = '8081'
 app.listen(PORT, () =>{console.log('Servidor rodando!')})
