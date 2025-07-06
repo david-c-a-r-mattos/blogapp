@@ -67,13 +67,43 @@ router.get("/categories", async (req, res) => {
         res.redirect("/admin");
     }
 });
-router.get("/categories/edit/:id", (req, res) => {
-    const { id } = req.params;
-    
-    if (!ObjectId.isValid(id)) {
-        return res.status(404).send("ID inválido");
+router.get("/categories/edit/:id", async (req, res) => 
+{
+    try
+    {
+        const category = await Category.findById({_id : req.params.id}).lean();
+        console.log(category);
+        res.render("admin/editcategories", {category});
     }
-    
-    res.render("admin/editcategories", { id });
+    catch(error)
+    {
+        req.flash("error_msg", "Essa categoria não existe!");
+        res.redirect("/admin/categories")
+    }
+});
+router.post("/categories/edit", async (req, res) =>
+{
+    try
+    {
+        const category = await Category.findById(req.body.id);
+        category.name = req.body.name;
+        category.slug = req.body.slug;
+        try
+        {
+            await category.save();
+            req.flash("success_msg", "Categoria editada com sucesso!");
+            res.redirect("/admin/categories");
+        }
+        catch(error)
+        {
+            req.flash("error_msg", "Erro ao salvar a categoria!");
+            res.redirect("/admin/categories");
+        }
+    }
+    catch(error)
+    {
+        req.flash("error_msg", "Erro ao editar a categoria!");
+        res.redirect("/admin/categories");
+    }
 });
 module.exports = router;
