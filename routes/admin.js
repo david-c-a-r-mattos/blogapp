@@ -1,8 +1,8 @@
-const express = require('express')
-const router = express.Router()
-const mongoose = require('mongoose')
-require('./../models/Category')
-const Category = mongoose.model('categories')
+const express = require('express');
+const router = express.Router();
+const mongoose = require('mongoose');
+require('./../models/Category');
+const Category = mongoose.model('categories');
 const { ObjectId } = require('mongodb'); 
 router.get("/", (req, res) => {
     res.send("Rota principal do painel ADM.")
