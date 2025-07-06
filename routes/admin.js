@@ -106,4 +106,18 @@ router.post("/categories/edit", async (req, res) =>
         res.redirect("/admin/categories");
     }
 });
+router.post("/categories/delete", async (req, res) =>
+{
+    try
+    {
+        await Category.findByIdAndDelete(req.body.id);
+        req.flash("success_msg", "Categoria deletada com sucesso!")
+        res.redirect("/admin/categories")
+    }
+    catch(error)
+    {
+        req.flash("error_msg", "Erro ao deletar categoria! "+error.message)
+        res.redirect("/admin/categories")
+    }
+})
 module.exports = router;
