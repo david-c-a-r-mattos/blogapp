@@ -1,3 +1,44 @@
 <h2>Lista de Posts:</h2>
 </hr>
 <a href="/admin/posts/add"><button class="btn btn-success">Novo Post</button></a>
+{{#each posts}}
+	<div class="card mt-4">
+		<div class="container card-body">
+			<h4>Nome: {{this.name}}</h4>
+			<h5>Slug: {{this.slug}}</h5>
+			<h4>Descrição:{{this.description}}</h4>
+			<h4>Conteúdo:</h4>
+			<textarea name="content" class="form-control">{{this.content}}</textarea></br>	
+			 <div class="mb-3">
+			    <strong>Categoria atual:</strong>
+			    {{#if this.category}}
+				<span class="badge bg-primary">{{this.category.name}}</span>
+			    {{else}}
+				<span class="text-danger">Nenhuma categoria definida</span>
+			    {{/if}}
+			</div>
+			</br></br>
+			<small>Data: {{this.date}}</small>
+			</br></br>
+			<div class="row align-items-end">
+				<div class="col">
+					<a href="/admin/posts/edit/{{this._id}}">
+						<button class="btn btn-success mt-4">Editar</button>
+					</a>
+				</div>
+				<div class="col">
+					<form action="/admin/posts/delete" method="POST">
+						<input type="hidden" name="id" value="{{this._id}}">
+						<button type="submit" class="btn btn-danger mt-4">Deletar</button>
+					</form>
+				</div>
+				<div class="col"></div>
+				<div class="col"></div>
+				<div class="col"></div>
+				<div class="col"></div>
+			</div>
+		</div>
+	</div>
+{{else}}
+	<h4>Nenhuma post registrado!</h4>
+{{/each}}

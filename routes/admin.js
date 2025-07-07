@@ -119,9 +119,19 @@ router.post("/categories/delete", async (req, res) =>
         res.redirect("/admin/categories")
     }
 })
-router.get("/posts", (req, res) => 
-{
-    res.render("admin/posts");  
+router.get("/posts", async (req, res) => {
+    try {
+        // Popula a categoria ao buscar os posts
+        const posts = await Post.find().populate({
+            path: 'category',
+            model: 'categories' // Nome exato do model
+        }).lean();
+        res.render('admin/posts', { posts });
+        console.log(posts[0].category.name);
+    } catch(error) {
+        req.flash("error_msg", "Erro ao listar posts!");
+        res.redirect("/admin");
+    }
 });
 router.get("/posts/add", async (req, res) =>
 {
@@ -152,14 +162,14 @@ router.post("/posts/new", async (req, res) =>
         }
         else
         {
-            const newPost = 
+            const newPost = new Post(
             {
                 title: req.body.title,
                 description: req.body.description,
                 content: req.body.content,
                 category: req.body.category,
                 slug: req.body.slug
-            }
+            });
             const savedPost = await newPost.save();
             req.flash("success_msg", "Post criado com sucesso!");
             res.redirect("/admin/posts");
@@ -168,7 +178,8 @@ router.post("/posts/new", async (req, res) =>
     }
     catch(error)
     {
-        req.flash("error_msg", "Erro ao criar o post!");
+        req.flash("error_msg", "Erro ao criar o post! "+error.message);
+        res.redirect("/admin/posts");
     }
 })
 module.exports = router;

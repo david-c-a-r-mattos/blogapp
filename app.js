@@ -57,6 +57,10 @@ app.get("/admin/categories", (req, res) =>
 {
     res.render("admin/categories")
 })
+app.get("/admin/posts", (req, res) =>
+{
+    res.render("admin/posts")
+})
 app.get("/admin/categories/add", (req, res) =>
 {
     res.render("admin/addcategories")
