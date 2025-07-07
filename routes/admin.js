@@ -3,12 +3,11 @@ const router = express.Router();
 const mongoose = require('mongoose');
 require('./../models/Category');
 const Category = mongoose.model('categories');
+require('./../models/Post');
+const Post = mongoose.model('posts');
 const { ObjectId } = require('mongodb'); 
 router.get("/", (req, res) => {
     res.send("Rota principal do painel ADM.")
-})
-router.get("/posts", (req, res) => {
-    res.send("Página de posts.")
 })
 router.post("/categories/new", async (req, res) => 
 {
@@ -111,13 +110,65 @@ router.post("/categories/delete", async (req, res) =>
     try
     {
         await Category.findByIdAndDelete(req.body.id);
-        req.flash("success_msg", "Categoria deletada com sucesso!")
-        res.redirect("/admin/categories")
+        req.flash("success_msg", "Categoria deletada com sucesso!");
+        res.redirect("/admin/categories");
     }
     catch(error)
     {
         req.flash("error_msg", "Erro ao deletar categoria! "+error.message)
         res.redirect("/admin/categories")
+    }
+})
+router.get("/posts", (req, res) => 
+{
+    res.render("admin/posts");  
+});
+router.get("/posts/add", async (req, res) =>
+{
+    try
+    {
+        const categories = await Category.find().lean();
+        res.render("admin/addposts", {categories});
+        console.log(categories);
+    }
+    catch(error)
+    {
+        req.flash("error_msg", "Erro ao carregar o post! "+erro.message);
+        res.redirect("/admin");
+    }
+})
+router.post("/posts/new", async (req, res) => 
+{
+    try
+    {
+        var errors = [];
+        if(req.body.category == '0')
+        {
+            errors.push({text: "Registre uma categoria"});
+        }
+        if(errors.length > 0)
+        {
+            res.render("/admin/addposts", {errors : errors})
+        }
+        else
+        {
+            const newPost = 
+            {
+                title: req.body.title,
+                description: req.body.description,
+                content: req.body.content,
+                category: req.body.category,
+                slug: req.body.slug
+            }
+            const savedPost = await newPost.save();
+            req.flash("success_msg", "Post criado com sucesso!");
+            res.redirect("/admin/posts");
+            
+        }
+    }
+    catch(error)
+    {
+        req.flash("error_msg", "Erro ao criar o post!");
     }
 })
 module.exports = router;
