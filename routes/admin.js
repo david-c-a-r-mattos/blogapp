@@ -182,4 +182,94 @@ router.post("/posts/new", async (req, res) =>
         res.redirect("/admin/posts");
     }
 })
+router.get("/posts/edit/:id", async (req, res) => 
+{
+    try
+    {
+        const post = await Post.findById({_id : req.params.id}).lean();
+        const category = await Category.findById(post.category).lean();
+        const categories = await Category.find().lean();
+        res.render("admin/editposts", { post, category, categories });
+        console.log(category.name);
+    }
+    catch(error)
+    {
+        req.flash("error_msg", error.message);
+        res.redirect("/admin/posts")
+    }
+});
+router.post("/posts/edit", async (req, res) =>
+{
+    try
+    {
+        const errors = [];
+        
+        if(!req.body.title || req.body.title.trim() === '') {
+            errors.push({ text: "Título é obrigatório" });
+        }
+        
+        if(!req.body.slug || req.body.slug.trim() === '') {
+            errors.push({ text: "Slug é obrigatório" });
+        }
+        
+        if(!req.body.description || req.body.description.trim() === '') {
+            errors.push({ text: "Descrição é obrigatória" });
+        }
+        
+        if(!req.body.content || req.body.content.trim() === '') {
+            errors.push({ text: "Conteúdo é obrigatório" });
+        }
+        
+        if(!req.body.category || req.body.category === '0') {
+            errors.push({ text: "Selecione uma categoria válida" });
+        }
+        const post = await Post.findById(req.body.id);
+        post.title = req.body.title;
+        post.slug = req.body.slug;
+        post.description = req.body.description;
+        post.content = req.body.content;
+        post.category = req.body.category;
+        console.log(post.category);
+        if(errors.length > 0) 
+        {
+            const categories = await Category.find().lean();
+            return res.render("admin/editposts", { 
+                errors,
+                categories,
+                category,
+                post
+            });
+        }
+        try
+        {
+            await post.save();
+            req.flash("success_msg", "Post editado com sucesso!");
+            res.redirect("/admin/posts");
+        }
+        catch(error)
+        {
+            req.flash("error_msg", "Erro ao salvar o post! "+error.message);
+            res.redirect("/admin/posts");
+        }
+    }
+    catch(error)
+    {
+        req.flash("error_msg", "Erro ao editar o post! "+error.message);
+        res.redirect("/admin/posts");
+    }
+});
+router.post("/posts/delete", async (req, res) =>
+{
+    try
+    {
+        await Post.findByIdAndDelete(req.body.id);
+        req.flash("success_msg", "Post deletado com sucesso!");
+        res.redirect("/admin/posts");
+    }
+    catch(error)
+    {
+        req.flash("error_msg", "Erro ao deletar post! "+error.message)
+        res.redirect("/admin/posts")
+    }
+})
 module.exports = router;
