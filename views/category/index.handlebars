@@ -1,0 +1,8 @@
+<h4>Categorias</h4>
+<hr>
+{{#each categories}}
+<a href="/categories/{{this.slug}}"><h5>{{this.name}}</h5></a>
+<hr>
+{{else}}
+  <h5>Erro ao exibir as categorias!</h5>
+{{/each}}

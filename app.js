@@ -7,6 +7,10 @@ const app = express()
 const path = require("path")
 const session = require('express-session')
 const flash = require('connect-flash')
+require('./models/Post');
+const Post = mongoose.model('posts');
+require('./models/Category');
+const Category = mongoose.model('categories');
 //Configurações
 async function connectToDatabase() 
 {
@@ -49,9 +53,79 @@ app.engine('handlebars', handlebars.engine({
 app.set('view engine', 'handlebars')
 //Rotas
 app.use("/admin", admin)
-app.get("/", (req, res) =>
+app.get("/", async (req, res) =>
 {
-    res.render("admin/index")
+    try
+    {    
+        const posts = await Post.find().populate({path: 'category', model: 'categories'}).lean();
+        res.render("index", {posts});
+    }
+    catch(error)
+    {
+        req.flash("error_msg", "Não foi possível carregar as postagens! "+error.message);
+        res.render("/404");
+    }
+})
+app.get("/404", (req, res) =>
+{
+    res.send("Erro 404!")
+})
+app.get("/post/:slug", async (req, res) =>
+{
+    try
+    {
+        const post = await Post.findOne({slug: req.params.slug}).lean();
+        console.log(post.slug)
+        if(post)
+        {
+            res.render("post/index", {post:post});
+        }
+        else
+        {
+            req.flash("error_msg", "Esse post não existe!");
+            res.redirect("/");
+        }
+    }
+    catch(error)
+    {
+        req.flash("error_msg", "Houve um erro interno! "+error.message);
+        res.redirect("/");
+    }
+})
+app.get("/categories/:slug", async (req, res) =>
+{
+    try
+    {
+        const category = await Category.findOne({slug: req.params.slug}).lean();
+        if(category)
+        {
+            const posts = await Post.find({category: category._id}).lean();
+            res.render("category/posts", { posts:posts, category:category });
+        }
+        else
+        {
+            req.flash("error_msg", "Essa categoria não existe!");
+            res.redirect("/");
+        }
+    }
+    catch(error)
+    {
+        req.flash("error_msg", "Houve um erro interno! "+error.message);
+        res.redirect("/");
+    }
+})
+app.get("/categories", async (req, res) =>
+{  
+    try
+    {
+        const categories = await Category.find().lean();
+        res.render("category/index", {categories:categories});
+    }
+    catch(error)
+    {
+        req.flash("error_msg", "Houve um erro ao listar as categorias! "+error.message);
+        res.redirect("/");
+    }
 })
 app.get("/admin/categories", (req, res) =>
 {
@@ -60,10 +134,6 @@ app.get("/admin/categories", (req, res) =>
 app.get("/admin/posts", (req, res) =>
 {
     res.render("admin/posts")
-})
-app.get("/admin/categories/add", (req, res) =>
-{
-    res.render("admin/addcategories")
 })
 const PORT = '8081'
 app.listen(PORT, () =>{console.log('Servidor rodando!')})

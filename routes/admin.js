@@ -6,10 +6,7 @@ const Category = mongoose.model('categories');
 require('./../models/Post');
 const Post = mongoose.model('posts');
 const { ObjectId } = require('mongodb'); 
-router.get("/", (req, res) => {
-    res.send("Rota principal do painel ADM.")
-})
-router.post("/categories/new", async (req, res) => 
+router.post("/category/new", async (req, res) => 
 {
     errors = [];
     if(!req.body.name || typeof req.body.name == undefined || req.body.name == null)
@@ -30,7 +27,7 @@ router.post("/categories/new", async (req, res) =>
     }
     if(errors.length > 0)
     {
-        res.render('admin/addcategories', {errors:errors})
+        res.render('admin/addcategory', {errors:errors})
     }
     else
     {
@@ -66,21 +63,21 @@ router.get("/categories", async (req, res) => {
         res.redirect("/admin");
     }
 });
-router.get("/categories/edit/:id", async (req, res) => 
+router.get("/category/edit/:id", async (req, res) => 
 {
     try
     {
         const category = await Category.findById({_id : req.params.id}).lean();
         console.log(category);
-        res.render("admin/editcategories", {category});
+        res.render("admin/editcategory", {category});
     }
     catch(error)
     {
         req.flash("error_msg", "Essa categoria não existe!");
-        res.redirect("/admin/categories")
+        res.redirect("/admin/category")
     }
 });
-router.post("/categories/edit", async (req, res) =>
+router.post("/category/edit", async (req, res) =>
 {
     try
     {
@@ -105,7 +102,7 @@ router.post("/categories/edit", async (req, res) =>
         res.redirect("/admin/categories");
     }
 });
-router.post("/categories/delete", async (req, res) =>
+router.post("/category/delete", async (req, res) =>
 {
     try
     {
@@ -122,10 +119,7 @@ router.post("/categories/delete", async (req, res) =>
 router.get("/posts", async (req, res) => {
     try {
         // Popula a categoria ao buscar os posts
-        const posts = await Post.find().populate({
-            path: 'category',
-            model: 'categories' // Nome exato do model
-        }).lean();
+        const posts = await Post.find().populate({path: 'category', model: 'categories'}).lean();
         res.render('admin/posts', { posts });
         console.log(posts[0].category.name);
     } catch(error) {
@@ -133,12 +127,25 @@ router.get("/posts", async (req, res) => {
         res.redirect("/admin");
     }
 });
-router.get("/posts/add", async (req, res) =>
+router.get("/category/add", async (req, res) =>
+{
+    try
+    {
+        const category = await Category.find().lean();
+        res.render("admin/addcategory", {category});
+    }
+    catch(error)
+    {
+        req.flash("error_msg", "Erro ao carregar categoria! "+erro.message);
+        res.redirect("/admin");
+    }
+})
+router.get("/post/add", async (req, res) =>
 {
     try
     {
         const categories = await Category.find().lean();
-        res.render("admin/addposts", {categories});
+        res.render("admin/addpost", {categories});
         console.log(categories);
     }
     catch(error)
@@ -147,7 +154,7 @@ router.get("/posts/add", async (req, res) =>
         res.redirect("/admin");
     }
 })
-router.post("/posts/new", async (req, res) => 
+router.post("/post/new", async (req, res) => 
 {
     try
     {
@@ -158,7 +165,7 @@ router.post("/posts/new", async (req, res) =>
         }
         if(errors.length > 0)
         {
-            res.render("/admin/addposts", {errors : errors})
+            res.render("/admin/addpost", {errors : errors})
         }
         else
         {
@@ -182,14 +189,14 @@ router.post("/posts/new", async (req, res) =>
         res.redirect("/admin/posts");
     }
 })
-router.get("/posts/edit/:id", async (req, res) => 
+router.get("/post/edit/:id", async (req, res) => 
 {
     try
     {
         const post = await Post.findById({_id : req.params.id}).lean();
         const category = await Category.findById(post.category).lean();
         const categories = await Category.find().lean();
-        res.render("admin/editposts", { post, category, categories });
+        res.render("admin/editpost", { post, category, categories });
         console.log(category.name);
     }
     catch(error)
@@ -198,7 +205,7 @@ router.get("/posts/edit/:id", async (req, res) =>
         res.redirect("/admin/posts")
     }
 });
-router.post("/posts/edit", async (req, res) =>
+router.post("/post/edit", async (req, res) =>
 {
     try
     {
@@ -233,7 +240,7 @@ router.post("/posts/edit", async (req, res) =>
         if(errors.length > 0) 
         {
             const categories = await Category.find().lean();
-            return res.render("admin/editposts", { 
+            return res.render("admin/editpost", { 
                 errors,
                 categories,
                 category,
@@ -258,7 +265,7 @@ router.post("/posts/edit", async (req, res) =>
         res.redirect("/admin/posts");
     }
 });
-router.post("/posts/delete", async (req, res) =>
+router.post("/post/delete", async (req, res) =>
 {
     try
     {
