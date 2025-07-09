@@ -2,16 +2,25 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 require('./../models/User');
-const User = mongoose.model('users'); // Corrigido: usar maiúsculo para o modelo
+const User = mongoose.model('users'); 
 const bcrypt = require('bcryptjs');
+const passport = require('passport');
 
 router.get("/registry", (req, res) => 
 {
     res.render("user/registry");
 });
-router.get("/login", (req, res) => 
-{
+router.get("/login", (req, res) => {
     res.render("user/login");
+});
+router.post("/login", (req, res, next) => 
+{
+    passport.authenticate('local',
+    {
+        successRedirect: '/',
+        failureRedirect: '/user/login',
+        failureFlash: true
+    })(req, res, next)
 });
 router.post("/registry", async (req, res) => 
 {
@@ -91,5 +100,6 @@ router.post("/registry", async (req, res) =>
         return res.redirect('/user/registry');
     }
 });
+
 module.exports = router;
 

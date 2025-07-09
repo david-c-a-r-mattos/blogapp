@@ -11,8 +11,12 @@ const Post = mongoose.model('posts');
 require('./models/Category');
 const Category = mongoose.model('categories');
 const user = require('./routes/user');
-const admin = require("./routes/admin")
+const admin = require("./routes/admin");
+const passport = require('passport');
+require('./config/auth')(passport);
+
 //Configurações
+
 async function connectToDatabase() 
 {
   try 
@@ -31,27 +35,32 @@ async function connectToDatabase()
   }
 }
 connectToDatabase();
+app.use(bodyParser.urlencoded({extended:true}))
+app.use(bodyParser.json())
 app.use(session(
 {
     secret: 'cursodenode',
     resave: true,
-    saveUnitialized: true
+    saveUninitialized: true
 }));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(flash());
 app.use((req, res, next) =>
 {
-    res.locals.success_msg = req.flash("success_msg")
-    res.locals.error_msg = req.flash("error_msg")
+    res.locals.success_msg = req.flash("success_msg");
+    res.locals.error_msg = req.flash("error_msg");
+    res.locals.error = req.flash('error');
     next();
 })
 app.use(flash());
 app.use(express.static(path.join(__dirname, "public")))
-app.use(bodyParser.urlencoded({extended:true}))
-app.use(bodyParser.json())
 app.engine('handlebars', handlebars.engine({
     defaultLayout: 'main'
 }));
 app.set('view engine', 'handlebars')
+app.use('/admin', admin);
+app.use('/user', user);
 //Rotas
 app.get("/", async (req, res) =>
 {
