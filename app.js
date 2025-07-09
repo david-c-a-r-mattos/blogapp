@@ -1,7 +1,6 @@
 const express = require('express')
 const handlebars = require('express-handlebars')
 const bodyParser = require('body-parser')
-const admin = require("./routes/admin")
 const mongoose = require('mongoose')
 const app = express()
 const path = require("path")
@@ -11,6 +10,8 @@ require('./models/Post');
 const Post = mongoose.model('posts');
 require('./models/Category');
 const Category = mongoose.model('categories');
+const user = require('./routes/user');
+const admin = require("./routes/admin")
 //Configurações
 async function connectToDatabase() 
 {
@@ -52,7 +53,6 @@ app.engine('handlebars', handlebars.engine({
 }));
 app.set('view engine', 'handlebars')
 //Rotas
-app.use("/admin", admin)
 app.get("/", async (req, res) =>
 {
     try
@@ -135,5 +135,7 @@ app.get("/admin/posts", (req, res) =>
 {
     res.render("admin/posts")
 })
+app.use("/admin", admin);
+app.use("/user", user);
 const PORT = '8081'
-app.listen(PORT, () =>{console.log('Servidor rodando!')})
+app.listen(PORT, () =>{console.log('Servidor rodando!')});
