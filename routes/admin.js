@@ -5,8 +5,9 @@ require('./../models/Category');
 const Category = mongoose.model('categories');
 require('./../models/Post');
 const Post = mongoose.model('posts');
-const { ObjectId } = require('mongodb'); 
-router.post("/category/new", async (req, res) => 
+const { ObjectId } = require('mongodb');
+const {admin} = require('./../helpers/admin'); 
+router.post("/category/new", admin, async (req, res) => 
 {
     errors = [];
     if(!req.body.name || typeof req.body.name == undefined || req.body.name == null)
@@ -49,7 +50,8 @@ router.post("/category/new", async (req, res) =>
         }
     }
 })
-router.get("/categories", async (req, res) => {
+router.get("/categories",  admin, async (req, res) => 
+{
     try {
         // Busca as categorias no banco de dados
         const categories = await Category.find().lean();
@@ -63,7 +65,7 @@ router.get("/categories", async (req, res) => {
         res.redirect("/admin");
     }
 });
-router.get("/category/edit/:id", async (req, res) => 
+router.get("/category/edit/:id",  admin, async (req, res) => 
 {
     try
     {
@@ -77,7 +79,7 @@ router.get("/category/edit/:id", async (req, res) =>
         res.redirect("/admin/category")
     }
 });
-router.post("/category/edit", async (req, res) =>
+router.post("/category/edit",  admin, async (req, res) =>
 {
     try
     {
@@ -102,7 +104,7 @@ router.post("/category/edit", async (req, res) =>
         res.redirect("/admin/categories");
     }
 });
-router.post("/category/delete", async (req, res) =>
+router.post("/category/delete",  admin, async (req, res) =>
 {
     try
     {
@@ -116,7 +118,7 @@ router.post("/category/delete", async (req, res) =>
         res.redirect("/admin/categories")
     }
 })
-router.get("/posts", async (req, res) => {
+router.get("/posts",  admin, async (req, res) => {
     try {
         // Popula a categoria ao buscar os posts
         const posts = await Post.find().populate({path: 'category', model: 'categories'}).lean();
@@ -127,7 +129,7 @@ router.get("/posts", async (req, res) => {
         res.redirect("/admin");
     }
 });
-router.get("/category/add", async (req, res) =>
+router.get("/category/add",  admin, async (req, res) =>
 {
     try
     {
@@ -140,7 +142,7 @@ router.get("/category/add", async (req, res) =>
         res.redirect("/admin");
     }
 })
-router.get("/post/add", async (req, res) =>
+router.get("/post/add",  admin, async (req, res) =>
 {
     try
     {
@@ -154,7 +156,7 @@ router.get("/post/add", async (req, res) =>
         res.redirect("/admin");
     }
 })
-router.post("/post/new", async (req, res) => 
+router.post("/post/new",  admin, async (req, res) => 
 {
     try
     {
@@ -189,7 +191,7 @@ router.post("/post/new", async (req, res) =>
         res.redirect("/admin/posts");
     }
 })
-router.get("/post/edit/:id", async (req, res) => 
+router.get("/post/edit/:id",  admin, async (req, res) => 
 {
     try
     {
@@ -205,7 +207,7 @@ router.get("/post/edit/:id", async (req, res) =>
         res.redirect("/admin/posts")
     }
 });
-router.post("/post/edit", async (req, res) =>
+router.post("/post/edit",  admin, async (req, res) =>
 {
     try
     {
@@ -265,7 +267,7 @@ router.post("/post/edit", async (req, res) =>
         res.redirect("/admin/posts");
     }
 });
-router.post("/post/delete", async (req, res) =>
+router.post("/post/delete",  admin, async (req, res) =>
 {
     try
     {

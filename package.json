@@ -10,5 +10,24 @@
     "mongoose": "^8.16.1",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0"
-  }
+  },
+  "name": "blogapp",
+  "version": "1.0.0",
+  "description": "Blog sobre programação",
+  "main": "app.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/david-c-a-r-mattos/blogapp.git"
+  },
+  "author": "David Cesar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/david-c-a-r-mattos/blogapp/issues"
+  },
+  "homepage": "https://github.com/david-c-a-r-mattos/blogapp#readme"
 }

@@ -100,6 +100,15 @@ router.post("/registry", async (req, res) =>
         return res.redirect('/user/registry');
     }
 });
+router.get('/logout', (req, res, next) => {
+    req.logout((err) => {
+        if (err) {
+            return next(err); // Trata erros, como problemas na sessão
+        }
+        req.flash('success_msg', 'Deslogado com sucesso!');
+        res.redirect('/');
+    });
+});
 
 module.exports = router;
 

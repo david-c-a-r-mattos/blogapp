@@ -14,6 +14,7 @@ const user = require('./routes/user');
 const admin = require("./routes/admin");
 const passport = require('passport');
 require('./config/auth')(passport);
+const db = require('./config/db');
 
 //Configurações
 
@@ -21,7 +22,7 @@ async function connectToDatabase()
 {
   try 
   {
-    await mongoose.connect('mongodb://localhost/blogapp', 
+    await mongoose.connect(db.MONGODB_URI, 
     {
       useNewUrlParser: true,
       useUnifiedTopology: true
@@ -51,6 +52,7 @@ app.use((req, res, next) =>
     res.locals.success_msg = req.flash("success_msg");
     res.locals.error_msg = req.flash("error_msg");
     res.locals.error = req.flash('error');
+    res.locals.user = req.user || null;
     next();
 })
 app.use(flash());
@@ -146,5 +148,5 @@ app.get("/admin/posts", (req, res) =>
 })
 app.use("/admin", admin);
 app.use("/user", user);
-const PORT = '8081'
+const PORT = process.env.PORT || '8081'
 app.listen(PORT, () =>{console.log('Servidor rodando!')});
