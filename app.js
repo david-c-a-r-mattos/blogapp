@@ -19,9 +19,8 @@ const Handlebars = require('handlebars');
 
 Handlebars.registerHelper('isActive', function (currentPath, targetPath, options) 
 {
-  return currentPath.includes(targetPath) ? 
-    options.fn(this) : 
-    options.inverse(this);
+    if (!currentPath) return options.inverse(this); // Se currentPath for undefined, retorna vazio
+    return currentPath.includes(targetPath) ? options.fn(this) : options.inverse(this);
 });
 //Configurações
 async function connectToDatabase() 
@@ -151,6 +150,10 @@ app.get("/admin/categories", (req, res) =>
 app.get("/admin/posts", (req, res) =>
 {
     res.render("admin/posts")
+})
+app.get("/admin", (req, res) =>
+{
+    res.render("admin/painel");
 })
 app.use("/admin", admin);
 app.use("/user", user);

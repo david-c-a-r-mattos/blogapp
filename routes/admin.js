@@ -6,11 +6,7 @@ const Category = mongoose.model('categories');
 require('./../models/Post');
 const Post = mongoose.model('posts');
 const { ObjectId } = require('mongodb');
-const {admin} = require('./../helpers/admin'); 
-router.get('/', (req,res) =>
-{
-    res.render('admin/painel');
-})
+const {admin} = require('./../helpers/admin');
 router.post("/category/new", admin, async (req, res) => 
 {
     errors = [];
