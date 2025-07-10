@@ -1,27 +1,28 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-	<a class="navbar-brand" href="/">Blog do Programador</a>
-<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+  <a class="navbar-brand" href="/">Blog do Programador</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
-</button>
-<div class="collapse navbar-collapse" id="navbarSupportedContent">
-	<ul class="navbar-nav mr-auto">
-	      	<li class="nav-item active">
-			<a class="nav-link disable" href="/">Home <span class="sr-only">(current)</span></a>
-	      	</li>
-	      	<li class="nav-item active">
-			<a class="nav-link disable" href="/categories">Categorias</a>
-	      	</li>
-	      	{{#if user}}
-		      	<li class="nav-item active">
-				<a class="nav-link disable" href="/user/logout">Sair</a>
-	      	{{else}}
-	      		<li class="nav-item active">
-				<a class="nav-link disable" href="/user/login">Login</a>
-				</li>
-				<li class="nav-item active">
-				<a class="nav-link disable" href="/user/registry">Registro</a>
-	      		</li>
-	      	{{/if}}
-    	</ul>
-</div>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link {{#isActive currentPath '/'}}active{{/isActive}}" href="/">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {{#isActive currentPath '/categories'}}active{{/isActive}}" href="/categories">Categorias</a>
+      </li>
+      {{#if user}}
+        <li class="nav-item">
+          <a class="nav-link {{#isActive currentPath '/user/logout'}}active{{/isActive}}" href="/user/logout">Sair</a>
+        </li>
+      {{else}}
+        <li class="nav-item">
+          <a class="nav-link {{#isActive currentPath '/user/login'}}active{{/isActive}}" href="/user/login">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {{#isActive currentPath '/user/registry'}}active{{/isActive}}" href="/user/registry">Registro</a>
+        </li>
+      {{/if}}
+    </ul>
+  </div>
 </nav>

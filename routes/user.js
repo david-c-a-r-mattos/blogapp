@@ -8,10 +8,10 @@ const passport = require('passport');
 
 router.get("/registry", (req, res) => 
 {
-    res.render("user/registry");
+    res.render("user/registry", {currentPath: '/user/registry'});
 });
 router.get("/login", (req, res) => {
-    res.render("user/login");
+    res.render("user/login",{currentPath: '/user/login'});
 });
 router.post("/login", (req, res, next) => 
 {

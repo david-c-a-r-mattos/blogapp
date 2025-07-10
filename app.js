@@ -15,9 +15,15 @@ const admin = require("./routes/admin");
 const passport = require('passport');
 require('./config/auth')(passport);
 const db = require('./config/db');
+const Handlebars = require('handlebars');
 
+Handlebars.registerHelper('isActive', function (currentPath, targetPath, options) 
+{
+  return currentPath.includes(targetPath) ? 
+    options.fn(this) : 
+    options.inverse(this);
+});
 //Configurações
-
 async function connectToDatabase() 
 {
   try 
@@ -69,7 +75,7 @@ app.get("/", async (req, res) =>
     try
     {    
         const posts = await Post.find().populate({path: 'category', model: 'categories'}).lean();
-        res.render("index", {posts});
+        res.render("index", {posts:posts,currentPath: req.originalUrl});
     }
     catch(error)
     {
@@ -130,7 +136,7 @@ app.get("/categories", async (req, res) =>
     try
     {
         const categories = await Category.find().lean();
-        res.render("category/index", {categories:categories});
+        res.render("category/index", {categories:categories,currentPath: req.path});
     }
     catch(error)
     {
