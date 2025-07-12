@@ -13,15 +13,6 @@ router.get("/registry", (req, res) =>
 router.get("/login", (req, res) => {
     res.render("user/login",{currentPath: '/user/login'});
 });
-/*router.post("/login", (req, res, next) => 
-{
-    passport.authenticate('local',
-    {
-        successRedirect: '/',
-        failureRedirect: '/user/login',
-        failureFlash: true
-    })(req, res, next)
-});*/
 router.post("/login", (req, res, next) => 
 {
     passport.authenticate('local', (error, user, info) => 
