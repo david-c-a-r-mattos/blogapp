@@ -13,7 +13,7 @@ router.get("/registry", (req, res) =>
 router.get("/login", (req, res) => {
     res.render("user/login",{currentPath: '/user/login'});
 });
-router.post("/login", (req, res, next) => 
+/*router.post("/login", (req, res, next) => 
 {
     passport.authenticate('local',
     {
@@ -21,6 +21,33 @@ router.post("/login", (req, res, next) =>
         failureRedirect: '/user/login',
         failureFlash: true
     })(req, res, next)
+});*/
+router.post("/login", (req, res, next) => 
+{
+    passport.authenticate('local', (error, user, info) => 
+    {
+        if (error) 
+        {
+            return next(error);
+        }
+        if (!user) 
+        {
+            req.flash('error', info.message);
+            return res.redirect('/user/login');
+        }
+        req.logIn(user, (error) => 
+        {
+            if (error) 
+            {
+                return next(error);
+            }
+            if (user.admin === 1) 
+            {
+                return res.redirect('/admin');
+            }
+            return res.redirect('/');
+        });
+    })(req, res, next);
 });
 router.post("/registry", async (req, res) => 
 {
@@ -101,9 +128,11 @@ router.post("/registry", async (req, res) =>
     }
 });
 router.get('/logout', (req, res, next) => {
-    req.logout((err) => {
-        if (err) {
-            return next(err); // Trata erros, como problemas na sessão
+    req.logout((error) => 
+    {
+        if (error) 
+        {
+            return next(error);
         }
         req.flash('success_msg', 'Deslogado com sucesso!');
         res.redirect('/');
